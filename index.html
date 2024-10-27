@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <style>
+    body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin-top: 50px;
+    }
+    input {
+        padding: 10px;
+        margin-bottom: 10px;
+        width: 200px;
+        align-items: center;
+    }
+    button {
+        padding: 10px 20px;
+    }
+    #weather {
+        margin-top: 20px;
+    }
+
+    .we{border: 2px solid black;
+        width: 40%;
+        height: 70vh;
+
+    }
+</style>
+</head>
+<body>
+  
+<h1>Weather App</h1>
+<input type="text" id="city" placeholder="Enter city name" />
+<button onclick="getWeather()">Get Weather</button>
+<div id="weather"></div>
+
+
+<script>
+    const apiKey = 'cfab85042d7f4d2ba07155327242510';
+
+    const weatherImages = {
+    'Sunny': 'https://img.icons8.com/?size=100&id=k2aN3YAEQqEP&format=png&color=000000',
+    'Cloudy': 'https://img.icons8.com/?size=100&id=3EQe3SjgyJFT&format=png&color=000000',
+    'Partly Cloudy': 'https://img.icons8.com/?size=100&id=TquwKm18epOW&format=png&color=000000',
+    'Rain': 'https://img.icons8.com/?size=100&id=SpZSUswN9tJs&format=png&color=000000',
+    'Thunderstrom': 'https://img.icons8.com/?size=100&id=wUUoXMNT7jZa&format=png&color=000000',
+    'Snow': 'https://img.icons8.com/?size=100&id=mn6t2pvcYFMM&format=png&color=000000',
+    'Clear': 'https://img.icons8.com/?size=100&id=iFk18swetEyt&format=png&color=000000',
+    'Overcast': 'https://img.icons8.com/?size=100&id=RcBBZX2XlWJV&format=png&color=000000',
+    'Mist': 'https://img.icons8.com/?size=100&id=0jk61BDH9XNt&format=png&color=000000',
+    'Patchy rain nearby': 'https://img.icons8.com/?size=100&id=SpZSUswN9tJs&format=png&color=000000'
+};
+function getWeather() {
+    const city = document.getElementById('city').value;
+    const url = `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}`;
+
+    axios.get(url)
+        .then(response => {
+            const data = response.data;
+            const weatherDiv = document.getElementById('weather');
+            const weatherInfo = {};
+
+            if (data && data.current) {
+                weatherInfo.city = data.location.name;
+                weatherInfo.temperatureC = data.current.temp_c;
+                weatherInfo.temperatureF = data.current.temp_f;
+                weatherInfo.condition = data.current.condition.text;
+                weatherInfo.humidity = data.current.humidity;
+
+                displayWeather(weatherInfo);
+            } else {
+                weatherDiv.innerHTML = '<p>City not found. Please try again.</p>';
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching the weather data:', error);
+            document.getElementById('weather').innerHTML = '<p>There was an error fetching the weather data. Please try again.</p>';
+        });
+}
+
+function displayWeather(weather) {
+    const weatherDiv = document.getElementById('weather');
+    const conditionImage = weatherImages[weather.condition] || 'https://img.icons8.com/?size=100&id=3EQe3SjgyJFT&format=png&color=000000'; // Fallback image
+
+    weatherDiv.innerHTML = `
+        <h2>Weather in ${weather.city}</h2>
+        <img src="${conditionImage}" alt="${weather.condition}" />
+        <p>Temperature: ${weather.temperatureC} °C (${weather.temperatureF} °F)</p>
+        <p>Condition: ${weather.condition}</p>
+        <p>Humidity: ${weather.humidity}%</p>
+    `;
+}
+</script>
+</body>
+</html>
+       
